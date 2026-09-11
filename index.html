@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delta Server Access Point</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f7f7f5;
+    --fg: #1a1a1a;
+    --muted: #5a5a5a;
+    --card: #ffffff;
+    --border: #e2e2df;
+    --accent: #2f6f4f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161a;
+      --fg: #eaeaea;
+      --muted: #a0a0a0;
+      --card: #1c1f24;
+      --border: #2c2f35;
+      --accent: #7fd8ab;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.55;
+    padding: 48px 20px;
+  }
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 0.2em;
+  }
+  .tagline {
+    color: var(--muted);
+    margin-top: 0;
+    margin-bottom: 2em;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+  }
+  .card h2 {
+    margin-top: 0;
+    font-size: 1.1rem;
+  }
+  .card p:last-child {
+    margin-bottom: 0;
+  }
+  a {
+    color: var(--accent);
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Delta Server Access Point</h1>
+  <p class="tagline">Personal projects and homelab work.</p>
+
+  <div class="card">
+    <h2><a href="gaia.html">Gaia</a></h2>
+    <p>A self-hosted AI assistant running on my homelab, reachable through
+      Cloudflare Tunnel + Access with tiered, 2FA-gated privilege.</p>
+  </div>
+</main>
+</body>
+</html>
