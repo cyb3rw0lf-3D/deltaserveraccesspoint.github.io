@@ -1,0 +1,14 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: gaia-ollama
+    restart: unless-stopped
+    # Bind to localhost only. cloudflared reaches this over loopback —
+    # never publish this on 0.0.0.0 or a LAN-facing interface.
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+
+volumes:
+  ollama-data:
