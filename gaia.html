@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gaia</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f7f7f5;
+    --fg: #1a1a1a;
+    --muted: #5a5a5a;
+    --card: #ffffff;
+    --border: #e2e2df;
+    --accent: #2f6f4f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161a;
+      --fg: #eaeaea;
+      --muted: #a0a0a0;
+      --card: #1c1f24;
+      --border: #2c2f35;
+      --accent: #7fd8ab;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.55;
+    padding: 48px 20px;
+  }
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 0.2em;
+  }
+  .tagline {
+    color: var(--muted);
+    margin-top: 0;
+    margin-bottom: 2em;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+  }
+  .card h2 {
+    margin-top: 0;
+    font-size: 1.1rem;
+  }
+  ul {
+    padding-left: 1.2em;
+  }
+  code {
+    background: var(--border);
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+  a {
+    color: var(--accent);
+  }
+  .back {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 0.9rem;
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Gaia</h1>
+  <p class="tagline">A self-hosted AI assistant running on my homelab.</p>
+
+  <div class="card">
+    <h2>What it is</h2>
+    <p>
+      Gaia runs <a href="https://ollama.com" target="_blank" rel="noopener">Ollama</a>
+      on my own hardware &mdash; a private AI assistant I control end to end,
+      rather than a hosted third-party service.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>How it's reachable</h2>
+    <ul>
+      <li>No ports are opened on my router. The homelab server connects
+        <em>outbound</em> to Cloudflare via a <code>cloudflared</code> tunnel.</li>
+      <li><strong>Cloudflare Access</strong> requires me to log in before any
+        request reaches the server at all.</li>
+      <li>Administrative (SSH) access is separate: key-only login for a
+        normal user, with root locked behind a second factor.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Stack</h2>
+    <ul>
+      <li>Ollama (Docker)</li>
+      <li>Cloudflare Tunnel + Cloudflare Access</li>
+      <li>SSH key auth + PAM TOTP for <code>sudo</code></li>
+    </ul>
+  </div>
+
+  <p>
+    Full setup instructions live in
+    <a href="https://github.com/cyb3rw0lf-3d/deltaserveraccesspoint.github.io/tree/main/gaia">
+      <code>gaia/README.md</code></a> in this repo.
+  </p>
+
+  <a class="back" href="./">&larr; Back home</a>
+</main>
+</body>
+</html>

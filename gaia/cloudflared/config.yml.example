@@ -1,0 +1,10 @@
+# Copy to config.yml and fill in your own tunnel ID/hostname.
+# config.yml is gitignored — never commit the real file or a tunnel token.
+
+tunnel: <your-tunnel-id>
+credentials-file: /etc/cloudflared/<your-tunnel-id>.json
+
+ingress:
+  - hostname: gaia.example.com
+    service: http://127.0.0.1:11434
+  - service: http_status:404
