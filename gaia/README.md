@@ -63,7 +63,7 @@ or the internet directly. It's only reachable through the tunnel below.
 ```bash
 cloudflared tunnel login
 cloudflared tunnel create gaia
-cloudflared tunnel route dns gaia gaia.yourdomain.com
+cloudflared tunnel route dns gaia gaia.android21engine.org
 ```
 
 Copy `cloudflared/config.yml.example` to `cloudflared/config.yml`, fill in
@@ -84,7 +84,7 @@ Never commit them.
 ## 4. Require login before traffic reaches the tunnel: Cloudflare Access
 
 In the Cloudflare Zero Trust dashboard, add an **Access application** for
-`gaia.yourdomain.com` and set a policy for who may authenticate (your
+`gaia.android21engine.org` and set a policy for who may authenticate (your
 email, a group, SSO provider, etc.). Once this is in place, nobody reaches
 Ollama without passing that login — this is the "login" layer; it lives in
 Cloudflare because GitHub Pages has no backend to run it.
