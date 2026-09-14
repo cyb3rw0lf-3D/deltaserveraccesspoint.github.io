@@ -9,6 +9,9 @@ This directory holds the deployment config you pull down and run **on your
 own homelab server**. No secrets live here; every credential is created
 and stored only on that machine.
 
+See [`DESIGN.md`](DESIGN.md) for the reasoning behind these choices, if
+you're picking this up fresh.
+
 ## Architecture
 
 ```
