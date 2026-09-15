@@ -40,13 +40,25 @@ Even with the tunnel and Access in place, defense in depth means the
 service itself shouldn't be reachable on the LAN or any other interface —
 only `cloudflared`, running on the same box, can reach it.
 
+**SSH also routed through the tunnel, behind its own Access application.**
+Administrative access needed to work from any device, not just on the
+home LAN — so SSH gets a second tunnel hostname (`ssh.android21engine.org`)
+with its own Cloudflare Access policy, separate from the AI's. This is
+additive, not a replacement: Access gates who can even attempt an SSH
+connection; the host-level hardening below still applies underneath it.
+No SSH port is ever forwarded on the router — same reasoning as the
+Ollama tunnel, applied to admin access instead of the AI.
+
 **SSH: key-only login, non-root user, root gated behind a second factor.**
 This is a separate privilege tier from the AI/tunnel access above — it
-governs administrative control of the machine itself. Password auth is
-disabled entirely (keys only). Login lands in a normal user account, not
-root. Escalating to root via `sudo` requires a TOTP code (PAM), so a
-leaked SSH key alone is not sufficient to get root — an attacker would
-still need the second factor.
+governs administrative control of the machine itself, independent of how
+the connection arrived (tunnel or LAN). Password auth is disabled
+entirely (keys only). Login lands in a normal user account, not root.
+Escalating to root via `sudo` requires a TOTP code (PAM), so a leaked SSH
+key alone is not sufficient to get root — an attacker would still need
+the second factor. Combined with Access in front of the tunnel hostname,
+reaching root now requires: passing Cloudflare Access, then an SSH key,
+then a TOTP code — three independent factors.
 
 **No credentials of any kind committed to the repo.**
 Tunnel tokens, credentials JSON, and TOTP secrets are created and stored

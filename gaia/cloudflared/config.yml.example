@@ -7,4 +7,6 @@ credentials-file: /etc/cloudflared/<your-tunnel-id>.json
 ingress:
   - hostname: gaia.android21engine.org
     service: http://127.0.0.1:11434
+  - hostname: ssh.android21engine.org
+    service: ssh://localhost:22
   - service: http_status:404

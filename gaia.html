@@ -97,8 +97,9 @@
         <em>outbound</em> to Cloudflare via a <code>cloudflared</code> tunnel.</li>
       <li><strong>Cloudflare Access</strong> requires me to log in before any
         request reaches the server at all.</li>
-      <li>Administrative (SSH) access is separate: key-only login for a
-        normal user, with root locked behind a second factor.</li>
+      <li>SSH admin access routes through the same tunnel, behind its own
+        Cloudflare Access login &mdash; key-only login for a normal user,
+        with root locked behind a second factor.</li>
     </ul>
   </div>
 

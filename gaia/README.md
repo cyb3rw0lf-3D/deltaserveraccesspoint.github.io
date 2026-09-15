@@ -1,8 +1,9 @@
 # Gaia
 
 Self-hosted AI assistant (Ollama) running on a homelab server, reachable
-remotely through Cloudflare Tunnel + Cloudflare Access, with tiered
-privilege on the host (key-only SSH login, 2FA-gated root).
+remotely — along with SSH admin access — through Cloudflare Tunnel +
+Cloudflare Access, with tiered privilege on the host (key-only SSH login,
+2FA-gated root).
 
 Nothing in this repo runs the AI itself — GitHub Pages is static hosting.
 This directory holds the deployment config you pull down and run **on your
@@ -16,18 +17,27 @@ you're picking this up fresh.
 
 ```
 you --> Cloudflare Access (login) --> Cloudflare Tunnel --> cloudflared (homelab)
-                                                               |
-                                                          Ollama (127.0.0.1 only)
+                                                               |    |
+                                                    Ollama (127.0.0.1) |
+                                                              sshd (localhost:22)
 ```
 
-- **No inbound ports opened on your router/firewall.** `cloudflared` makes
-  an outbound connection to Cloudflare; Ollama itself is bound to
-  `127.0.0.1` and is never reachable directly, not even on your LAN.
-- **Cloudflare Access** sits in front of the tunnel hostname and requires
-  you to authenticate (email OTP, SSO, whatever you configure) before any
-  request reaches the homelab box at all.
-- **Host-level access** (SSH) is separate from the tunnel and is hardened
-  independently — see step 5 below.
+- **No inbound ports opened on your router/firewall, for either service.**
+  `cloudflared` makes an outbound connection to Cloudflare; both Ollama and
+  SSH are only reachable through the tunnel, never directly — Ollama is
+  bound to `127.0.0.1`, and SSH is never port-forwarded on the router.
+- **Cloudflare Access** sits in front of *each* tunnel hostname separately
+  and requires you to authenticate (email OTP, SSO, whatever you
+  configure) before any request reaches the homelab box at all — this
+  applies independently to the AI hostname and the SSH hostname, so you
+  can set different policies for each if you want.
+- **Host-level hardening** (key-only login, non-root, 2FA-gated root) is
+  independent of Cloudflare and stays in place underneath it — Access is
+  an *additional* login layer in front of SSH, not a replacement for it.
+  See steps 6–7 below.
+- Any device, anywhere, can reach either service once this is set up —
+  it just needs `cloudflared` (for SSH) or a browser (for the AI) and to
+  pass the Access login. No per-device "hookup" beyond that.
 
 ## 1. Install prerequisites (on the homelab server)
 
@@ -64,6 +74,7 @@ or the internet directly. It's only reachable through the tunnel below.
 cloudflared tunnel login
 cloudflared tunnel create gaia
 cloudflared tunnel route dns gaia gaia.android21engine.org
+cloudflared tunnel route dns gaia ssh.android21engine.org
 ```
 
 Copy `cloudflared/config.yml.example` to `cloudflared/config.yml`, fill in
@@ -83,15 +94,41 @@ Never commit them.
 
 ## 4. Require login before traffic reaches the tunnel: Cloudflare Access
 
-In the Cloudflare Zero Trust dashboard, add an **Access application** for
-`gaia.android21engine.org` and set a policy for who may authenticate (your
-email, a group, SSO provider, etc.). Once this is in place, nobody reaches
-Ollama without passing that login — this is the "login" layer; it lives in
-Cloudflare because GitHub Pages has no backend to run it.
+In the Cloudflare Zero Trust dashboard, add **two Access applications**,
+one per hostname:
 
-## 5. Harden host (SSH) access, separately from the tunnel
+- `gaia.android21engine.org` (type: Self-hosted) — gates the AI.
+- `ssh.android21engine.org` (type: Self-hosted, or "SSH" if offered) —
+  gates administrative access to the box.
 
-This governs administrative access to the box itself, not the AI service.
+Set a policy on each for who may authenticate (your email, a group, SSO
+provider, etc.) — they can be the same policy or different ones. Once
+these are in place, nobody reaches Ollama or SSH without passing that
+login first — this is the "login" layer; it lives in Cloudflare because
+GitHub Pages has no backend to run it.
+
+## 5. Connect to SSH through the tunnel, from any device
+
+On whatever device you're connecting *from* (not the homelab box), install
+`cloudflared` and add this to `~/.ssh/config`:
+
+```
+Host gaia-ssh
+  HostName ssh.android21engine.org
+  ProxyCommand cloudflared access ssh --hostname %h
+  User <your-non-root-username>
+```
+
+Then `ssh gaia-ssh` — it opens a browser for the Access login, then drops
+you into a normal SSH session. No port was ever opened on the router; the
+connection goes out through the same tunnel as the AI traffic.
+
+## 6. Harden host (SSH) access, independently of Cloudflare
+
+Cloudflare Access is a login gate *in front of* SSH, not a substitute for
+securing SSH itself. This governs administrative access to the box itself,
+not the AI service, and applies whether you connect via the tunnel above
+or directly on the LAN.
 
 ```bash
 # Disable password auth, key-only login (edit /etc/ssh/sshd_config):
@@ -103,7 +140,7 @@ sudo systemctl restart sshd
 Log in as a normal, non-root user with an SSH key. Root is never reached
 directly — only via `sudo` from that account.
 
-## 6. Gate root (`sudo`) behind a second factor
+## 7. Gate root (`sudo`) behind a second factor
 
 ```bash
 sudo apt install libpam-google-authenticator
